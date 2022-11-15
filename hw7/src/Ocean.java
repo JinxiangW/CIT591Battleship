@@ -22,39 +22,153 @@ public class Ocean {
 	
 	void placeAllShipsRandomly() {
 		Random rd = new Random();
-		int[] btlIndex = battleShipRd(rd);
-		
+		battleshipRd(rd);
+		cruiserRd(rd);
+		destroyerRd(rd);
+		submarineRd(rd);
 	}
 	
-	int[] battleShipRd(Random rd) {
-		int m = rd.nextInt(10), n = rd.nextInt(10);
-		while (m + 3 > 9 && m - 3 < 0 && n + 3 > 9 && n - 3 < 0 )
+	void battleshipRd(Random rd) {
+		boolean isVerticle = rd.nextBoolean();
+		Battleship battleship = new Battleship();
+		if (!isVerticle)
 		{
-			m = rd.nextInt(10);
-			n = rd.nextInt(10);
+			int m = rd.nextInt(10);
+			int n = rd.nextInt(7);
+			for (int i = 0; i < 4; ++i)
+			{
+				ships[m][n + i] = battleship;
+			}
+		} else 
+		{
+			int m = rd.nextInt(7);
+			int n = rd.nextInt(10);
+			for (int i = 0; i < 4; ++i)
+			{
+				ships[m + i][n] = battleship;
+			}
 		}
-		ArrayList<Integer> dir = new ArrayList<Integer>();
-		
-		dir.add((m + 3 > 9)? -1 : m + 3);
-		dir.add((m - 3 < 0)? -1 : m - 3);
-		dir.add((n + 3 > 9)? -1 : n + 3);
-		dir.add((n - 3 < 0)? -1 : n - 3);
-		
-		int dirRd = rd.nextInt(4);
-		while (dir.get(dirRd) == -1) dirRd = rd.nextInt(4);
-		int mEnd = m, nEnd = n;
-		
-		if (dirRd == 0 || dirRd == 1) 
-		{
-			mEnd = dir.get(dirRd);
-		}else if (dirRd == 2 || dirRd == 3)
-		{
-			nEnd = dir.get(dirRd);
-		}
-		
-		int[] res = {m, mEnd, n, nEnd};
-		return res;
+
 	}
 	
+	boolean isAvailable(int m, int n, int length, boolean isVertical) {
+		EmptySea empty = new EmptySea();
+		if (isVertical)
+		{
+			for (int i = 0; i < length; ++i) 
+			{
+				for (int j = 0; j < 3; ++j)
+				{
+					if (ships[m - 1 + i][n - 1 + j] != empty) return false;
+				}
+			} 
+		} else 
+		{
+			for (int i = 0; i < 3; ++i) 
+			{
+				for (int j = 0; j < length; ++j)
+				{
+					if (ships[m - 1 + i][n - 1 + j] != empty) return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	void cruiserRd(Random rd) {
+		boolean isVerticle = rd.nextBoolean();
+		Cruiser cruiser = new Cruiser();
+		if (!isVerticle)
+		{
+			int m = rd.nextInt(10);
+			int n = rd.nextInt(7);
+			while (!isAvailable(m, n, 3, isVerticle))
+			{
+				m = rd.nextInt(10);
+				n = rd.nextInt(7);
+			}
+			for (int i = 0; i < 3; ++i)
+			{
+				ships[m][n + i] = cruiser;
+			}
+		} else
+		{
+			int m = rd.nextInt(7);
+			int n = rd.nextInt(10);
+			while (!isAvailable(m, n, 3, isVerticle))
+			{
+				m = rd.nextInt(7);
+				n = rd.nextInt(10);
+			}
+			for (int i = 0; i < 3; ++i)
+			{
+				ships[m + 1][n] = cruiser;
+			}
+		}
+	}
+	
+	void destroyerRd(Random rd) {
+		boolean isVerticle = rd.nextBoolean();
+		Destroyer destroyer = new Destroyer();
+		if (!isVerticle)
+		{
+			int m = rd.nextInt(10);
+			int n = rd.nextInt(7);
+			while (!isAvailable(m, n, 3, isVerticle))
+			{
+				m = rd.nextInt(10);
+				n = rd.nextInt(7);
+			}
+			for (int i = 0; i < 3; ++i)
+			{
+				ships[m][n + i] = destroyer;
+			}
+		} else
+		{
+			int m = rd.nextInt(7);
+			int n = rd.nextInt(10);
+			while (!isAvailable(m, n, 3, isVerticle))
+			{
+				m = rd.nextInt(7);
+				n = rd.nextInt(10);
+			}
+			for (int i = 0; i < 3; ++i)
+			{
+				ships[m + 1][n] = destroyer;
+			}
+		}
+	}
+	
+	void submarineRd(Random rd) {
+		boolean isVerticle = rd.nextBoolean();
+		Submarine submarine = new Submarine();
+		if (!isVerticle)
+		{
+			int m = rd.nextInt(10);
+			int n = rd.nextInt(7);
+			while (!isAvailable(m, n, 3, isVerticle))
+			{
+				m = rd.nextInt(10);
+				n = rd.nextInt(7);
+			}
+			for (int i = 0; i < 3; ++i)
+			{
+				ships[m][n + i] = submarine;
+			}
+		} else
+		{
+			int m = rd.nextInt(7);
+			int n = rd.nextInt(10);
+			while (!isAvailable(m, n, 3, isVerticle))
+			{
+				m = rd.nextInt(7);
+				n = rd.nextInt(10);
+			}
+			for (int i = 0; i < 3; ++i)
+			{
+				ships[m + 1][n] = submarine;
+			}
+		}
+	}
 	
 }
