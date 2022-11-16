@@ -1,4 +1,4 @@
-
+import java.util.Arrays;
 
 public abstract class Ship {
 	private int bowRow;
@@ -9,7 +9,7 @@ public abstract class Ship {
 	
 	public Ship(int length) {
 		this.length = length;
-		
+		Arrays.fill(hit, false);
 	}
 
 	public int getBowRow() {
@@ -48,11 +48,23 @@ public abstract class Ship {
 	
 	boolean okToPlaceShipAt(int row, int column, boolean horizontal, Ocean ocean) {
 		
-		return true;
+		return ocean.isAvailable(row, column, this.length, !horizontal);
 	}
 	
 	void placeShipAt(int row, int column, boolean horizontal, Ocean ocean){
-		
+		//here might be some problem, the ocean ships might not get updated.
+		Ship ships[][] = ocean.getShipArray();
+		for (int i = 0; i < this.length; ++i)
+		{
+			if (horizontal)
+			{
+				ships[row][column + i] = this;
+			} else
+			{
+				ships[row + i][column] = this;
+			}
+		}
+		ocean.setShipArray(ships);
 	}
 	
 	boolean shootAt(int row, int column) {
@@ -61,6 +73,10 @@ public abstract class Ship {
 	}
 	
 	boolean isSunk() {
+		for (boolean i : this.hit)
+		{
+			if (!i) return false;
+		}
 		return true;
 	}
 	
