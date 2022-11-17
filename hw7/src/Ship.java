@@ -3,12 +3,12 @@ import java.util.Arrays;
 public abstract class Ship {
 	private int bowRow;
 	private int bowColumn;
-	private int length;
+	private int length = 0;
 	private boolean horizontal;
 	private boolean[] hit;
-	
 	public Ship(int length) {
 		this.length = length;
+		this.hit = new boolean[length];
 		Arrays.fill(hit, false);
 	}
 
@@ -58,17 +58,22 @@ public abstract class Ship {
 		{
 			if (horizontal)
 			{
+//				System.out.println(this.getShipType() + " is placed at: " + row + " " + (column+i));
 				ships[row][column + i] = this;
 			} else
 			{
+//				System.out.println(this.getShipType() + " is placed at: " + (row + i) + " " + column);
 				ships[row + i][column] = this;
 			}
+			
 		}
 		ocean.setShipArray(ships);
 	}
 	
 	boolean shootAt(int row, int column) {
-		
+		if (this.isSunk()) return false;
+		int index = row - this.bowRow + column - this.bowColumn;
+		this.hit[index] = true;
 		return true;
 	}
 	
@@ -82,6 +87,6 @@ public abstract class Ship {
 	
 	@Override
 	public String toString() {
-		return isSunk()? "s" : "x";
+		return isSunk()? "s" : ".";
 	}
 }

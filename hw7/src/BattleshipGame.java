@@ -1,21 +1,31 @@
 import java.util.Arrays;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class BattleshipGame {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		int test[][] = new int[10][10];
-		for (int[] i : test) {
-			Arrays.fill(i, 0);
-		}
-		
-		for (int i = 0; i < 10; ++i)
+		Scanner sc = new Scanner(System.in);
+		Ocean ocean = new Ocean();
+		ocean.placeAllShipsRandomly();
+		while (!ocean.isGameOver())
 		{
-			System.out.print("\n");
-			for (int j = 0; j < 10; ++j) 
-			{
-				System.out.print(" " + j);
-			}
+			prompt(ocean, sc);
+		}
+	}
+	
+	public static void prompt(Ocean ocean, Scanner sc) {
+//		ocean.printWithShips();
+		ocean.print();
+		try 
+		{
+			System.out.println("Enter row, column");
+			int row = sc.nextInt(), column = sc.nextInt();
+			ocean.shootAt(row, column);
+		} catch (InputMismatchException e)
+		{
+			System.out.println("Please enter a valid number\n");
+			sc.nextLine();
 		}
 		
 	}
