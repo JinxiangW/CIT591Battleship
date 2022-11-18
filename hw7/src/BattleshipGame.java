@@ -15,8 +15,8 @@ public class BattleshipGame {
 	}
 	
 	public static void prompt(Ocean ocean, Scanner sc) {
-//		ocean.printWithShips();
-		ocean.print();
+		ocean.printWithShips();
+//		ocean.print();
 		try 
 		{
 			System.out.println("Enter row, column");

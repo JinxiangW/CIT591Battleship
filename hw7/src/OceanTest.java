@@ -2,6 +2,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -162,7 +163,6 @@ class OceanTest {
 		column = 0;
 		horizontal = false;
 		submarine.placeShipAt(row, column, horizontal, ocean);
-		
 		assertTrue(ocean.shootAt(1, 5));
 		assertFalse(destroyer.isSunk());
 		assertTrue(ocean.shootAt(0, 5));

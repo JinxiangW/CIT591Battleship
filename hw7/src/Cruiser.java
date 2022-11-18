@@ -1,7 +1,7 @@
 
 
 public class Cruiser extends Ship{
-	private static final String TYPE = "Cruiser";
+	private static final String TYPE = "cruiser";
 	private static final int LENGTH = 3; 
 	
 	public Cruiser() {

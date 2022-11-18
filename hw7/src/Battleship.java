@@ -1,7 +1,7 @@
 
 
 public class Battleship extends Ship{
-	private static final String TYPE = "Battleship";
+	private static final String TYPE = "battleship";
 	private static final int LENGTH = 4; 
 	public Battleship() {
 		super(Battleship.LENGTH);

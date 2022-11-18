@@ -50,11 +50,15 @@ public class Ocean {
 	}
 	
 	boolean shootAt(int row, int column) {
+		++this.shotsFired;
 		Ship ship = ships[row][column];
-		ship.shootAt(row, column);
+		
+//		System.out.println(ship.getShipType() + " " + ship.isSunk());
 		if (!ship.getShipType().equals("empty") && !ship.isSunk())
 		{
+			++this.hitCount;
 			this.table[row][column] = "x";
+			ship.shootAt(row, column);
 			return true;
 		}
 			
@@ -67,7 +71,7 @@ public class Ocean {
 	}
 	
 	int getHitCount() {
-		return this.getHitCount();
+		return this.hitCount;
 	}
 	
 	int getShipsSunk() {
@@ -114,51 +118,48 @@ public class Ocean {
 			System.out.print(i);
 			for (int j = 0; j < 10; ++j)
 			{
-				boolean isEmpty = this.ships[i][j].getShipType().equals("empty");
-				System.out.print((isEmpty? this.ships[i][j].toString() : " ") + " ");
+				System.out.print(this.ships[i][j].toString() + " ");
 			}
 			System.out.print("\n");
 		}
 	}
 	void battleshipRd(Random rd) {
-		boolean isVerticle = rd.nextBoolean();
+		boolean horizontal = rd.nextBoolean();
 		Battleship battleship = new Battleship();
 		int m, n;
-		if (!isVerticle)
+		if (horizontal)
 		{
 			m = rd.nextInt(10);
-			n = rd.nextInt(11 - battleship.getLength());		
+			n = rd.nextInt(11 - battleship.getLength()) + battleship.getLength() - 1;		
 		} else 
 		{
-			m = rd.nextInt(11 - battleship.getLength());
+			m = rd.nextInt(11 - battleship.getLength()) + battleship.getLength() - 1;
 			n = rd.nextInt(10);
 		}
-		battleship.setBowRow(m);
-		battleship.setBowColumn(n);
-		battleship.placeShipAt(m, n, !isVerticle, this);
+		battleship.placeShipAt(m, n, horizontal, this);
 	}
 	
-	boolean isAvailable(int m, int n, int length, boolean isVertical) {
-		EmptySea empty = new EmptySea();
-		if (isVertical)
+	boolean isAvailable(int m, int n, int length, boolean horizontal) {
+		if (horizontal)
 		{
-			for (int i = 0; i < length + 2; ++i) 
+			for (int i = 0; i < length + 2; ++i)
 			{
 				for (int j = 0; j < 3; ++j)
 				{
-					if (m - 1 + i < 0 || m - 1 + i >= 10 || n - 1 + j < 0 || n - 1 + j >= 10) continue;
-					if (this.ships[m - 1 + i][n - 1 + j].getShipType() != "empty") return false;
+					int row = m + 1 - i, col = n  + 1 - j;
+					if (row < 0 || row >= 10 || col < 0 || col >= 10) continue;
+					if (!this.ships[row][col].getShipType().equals("empty")) return false;
 				}
-			} 
-		} else 
+			}
+		} else
 		{
-			for (int i = 0; i < 3; ++i) 
+			for (int i = 0; i < 3; ++i)
 			{
 				for (int j = 0; j < length + 2; ++j)
 				{
-					if (m - 1 + i < 0 || m - 1 + i >= 10 || n - 1 + j < 0 || n - 1 + j >= 10) continue;
-//					String temp = this.ships[m - 1 + i][n - 1 + j].getShipType();
-					if (this.ships[m - 1 + i][n - 1 + j].getShipType() != "empty") return false;
+					int row = m + 1 - i, col = n  + 1 - j;
+					if (row < 0 || row >= 10 || col < 0 || col >= 10) continue;
+					if (!this.ships[row][col].getShipType().equals("empty")) return false;
 				}
 			}
 		}
@@ -166,88 +167,82 @@ public class Ocean {
 	}
 	
 	void cruiserRd(Random rd) {
-		boolean isVerticle = rd.nextBoolean();
+		boolean horizontal = rd.nextBoolean();
 		Cruiser cruiser = new Cruiser();
 		int m, n;
-		if (!isVerticle)
+		if (horizontal)
 		{
 			m = rd.nextInt(10);
-			n = rd.nextInt(11 - cruiser.getLength());
-			while (!isAvailable(m, n, cruiser.getLength(), isVerticle))
+			n = rd.nextInt(11 - cruiser.getLength()) + cruiser.getLength() - 1;
+			while (!isAvailable(m, n, cruiser.getLength(), horizontal))
 			{
 				m = rd.nextInt(10);
-				n = rd.nextInt(11 - cruiser.getLength());
+				n = rd.nextInt(11 - cruiser.getLength()) + cruiser.getLength() - 1;
 			}
 		} else
 		{
-			m = rd.nextInt(11 - cruiser.getLength());
+			m = rd.nextInt(11 - cruiser.getLength()) + cruiser.getLength() - 1;
 			n = rd.nextInt(10);
-			while (!isAvailable(m, n, cruiser.getLength(), isVerticle))
+			while (!isAvailable(m, n, cruiser.getLength(), horizontal))
 			{
-				m = rd.nextInt(11 - cruiser.getLength());
+				m = rd.nextInt(11 - cruiser.getLength()) + cruiser.getLength() - 1;
 				n = rd.nextInt(10);
 			}
 		}
-		cruiser.setBowRow(m);
-		cruiser.setBowColumn(n);
 //		System.out.println(m + " " + n);
-		cruiser.placeShipAt(m, n, !isVerticle, this);
+		cruiser.placeShipAt(m, n, horizontal, this);
 	}
 	
 	void destroyerRd(Random rd) {
-		boolean isVerticle = rd.nextBoolean();
+		boolean horizontal = rd.nextBoolean();
 		Destroyer destroyer = new Destroyer();
 		int m, n;
-		if (!isVerticle)
+		if (horizontal)
 		{
 			m = rd.nextInt(10);
-			n = rd.nextInt(11 - destroyer.getLength());
-			while (!isAvailable(m, n, destroyer.getLength(), isVerticle))
+			n = rd.nextInt(11 - destroyer.getLength()) + destroyer.getLength() - 1;
+			while (!isAvailable(m, n, destroyer.getLength(), horizontal))
 			{
 				m = rd.nextInt(10);
-				n = rd.nextInt(11 - destroyer.getLength());
+				n = rd.nextInt(11 - destroyer.getLength()) + destroyer.getLength() - 1;
 			}
 		} else
 		{
-			m = rd.nextInt(11 - destroyer.getLength());
+			m = rd.nextInt(11 - destroyer.getLength()) + destroyer.getLength() - 1;
 			n = rd.nextInt(10);
-			while (!isAvailable(m, n, destroyer.getLength(), isVerticle))
+			while (!isAvailable(m, n, destroyer.getLength(), horizontal))
 			{
-				m = rd.nextInt(11 - destroyer.getLength());
+				m = rd.nextInt(11 - destroyer.getLength()) + destroyer.getLength() - 1;
 				n = rd.nextInt(10);
 			}
 		}
-		destroyer.setBowRow(m);
-		destroyer.setBowColumn(n);
-		destroyer.placeShipAt(m, n, !isVerticle, this);
+		destroyer.placeShipAt(m, n, horizontal, this);
 	}
 	
 	void submarineRd(Random rd) {
-		boolean isVerticle = rd.nextBoolean();
+		boolean horizontal = rd.nextBoolean();
 		Submarine submarine = new Submarine();
 		int m, n;
-		if (!isVerticle)
+		if (horizontal)
 		{
 			m = rd.nextInt(10);
-			n = rd.nextInt(11 - submarine.getLength());
-			while (!isAvailable(m, n, submarine.getLength(), isVerticle))
+			n = rd.nextInt(11 - submarine.getLength()) + submarine.getLength() - 1;
+			while (!isAvailable(m, n, submarine.getLength(), horizontal))
 			{
 				m = rd.nextInt(10);
-				n = rd.nextInt(11 - submarine.getLength());
+				n = rd.nextInt(11 - submarine.getLength()) + submarine.getLength() - 1;
 			}
 		} else
 		{
-			m = rd.nextInt(11 - submarine.getLength());
+			m = rd.nextInt(11 - submarine.getLength()) + submarine.getLength() - 1;
 			n = rd.nextInt(10);
-			while (!isAvailable(m, n, submarine.getLength(), isVerticle))
+			while (!isAvailable(m, n, submarine.getLength(), horizontal))
 			{
-				m = rd.nextInt(11 - submarine.getLength());
+				m = rd.nextInt(11 - submarine.getLength()) + submarine.getLength() - 1;
 				n = rd.nextInt(10);
 			}
 		}
-		submarine.setBowRow(m);
-		submarine.setBowColumn(n);
-		submarine.placeShipAt(m, n, !isVerticle, this);
+		submarine.placeShipAt(m, n, horizontal, this);
 	}
 	
 	

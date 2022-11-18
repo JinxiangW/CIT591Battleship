@@ -53,26 +53,31 @@ public abstract class Ship {
 	
 	void placeShipAt(int row, int column, boolean horizontal, Ocean ocean){
 		//here might be some problem, the ocean ships might not get updated.
+		this.setBowRow(row);
+		this.setBowColumn(column);
+//		System.out.println(this.getShipType() + " is placed at " + this.bowRow + " " + this.bowColumn + " " + horizontal);
 		Ship ships[][] = ocean.getShipArray();
 		for (int i = 0; i < this.length; ++i)
 		{
 			if (horizontal)
 			{
 //				System.out.println(this.getShipType() + " is placed at: " + row + " " + (column+i));
-				ships[row][column + i] = this;
+				ships[row][column - i] = this;
 			} else
 			{
 //				System.out.println(this.getShipType() + " is placed at: " + (row + i) + " " + column);
-				ships[row + i][column] = this;
+				ships[row - i][column] = this;
 			}
 			
 		}
+
+		
 		ocean.setShipArray(ships);
 	}
 	
 	boolean shootAt(int row, int column) {
 		if (this.isSunk()) return false;
-		int index = row - this.bowRow + column - this.bowColumn;
+		int index = this.bowRow - row + this.bowColumn - column;
 		this.hit[index] = true;
 		return true;
 	}
@@ -87,6 +92,6 @@ public abstract class Ship {
 	
 	@Override
 	public String toString() {
-		return isSunk()? "s" : ".";
+		return isSunk()? "s" : "x";
 	}
 }

@@ -1,7 +1,7 @@
 
 
 public class Destroyer extends Ship{
-	private static final String TYPE = "Destroyer";
+	private static final String TYPE = "destroyer";
 	private static final int LENGTH = 2;
 	
 	public Destroyer() {
