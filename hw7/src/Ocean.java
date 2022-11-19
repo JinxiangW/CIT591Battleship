@@ -15,6 +15,11 @@ public class Ocean {
 	private int hitCount;
 	private int shipsSunk;
 	
+	/**
+	 * initialize the ocean. Set the 2d ship object array to represent the allocation
+	 * of ships. The ships array is initialized with emptySea object. Set utility variables
+	 * to 0
+	 */
 	public Ocean() {
 		for (int i = 0; i < 10; ++i) {
 			for (int j = 0; j < 10; ++j) {
@@ -35,6 +40,11 @@ public class Ocean {
 		this.shipsSunk = 0;
 	}
 	
+	/**
+	 * place ships on the board. The number of ships that are placed is based
+	 * on its type. Different randomization method is wrote for each type of ship
+	 * respectively
+	 */
 	void placeAllShipsRandomly() {
 		Random rd = new Random();
 		for(int i = 0; i < Ocean.NUM_BATTLESHIP; ++i) battleshipRd(rd);
@@ -43,50 +53,98 @@ public class Ocean {
 		for(int i = 0; i < Ocean.NUM_SUBMARINE; ++i) submarineRd(rd);	
 	}
 	
+	/**
+	 * check if the given location is occupied
+	 * @param row
+	 * @param column
+	 * @return
+	 */
 	boolean isOccupied(int row, int column) {
 		EmptySea empty = new EmptySea();
 		if (ships[row][column] != empty) return true;
 		return false;
 	}
 	
+	/**
+	 * shoot the given location, set mark respectively on the game board table for 
+	 * print method
+	 * @param row
+	 * @param column
+	 * @return
+	 */
 	boolean shootAt(int row, int column) {
 		++this.shotsFired;
 		Ship ship = ships[row][column];
 		
-//		System.out.println(ship.getShipType() + " " + ship.isSunk());
 		if (!ship.getShipType().equals("empty") && !ship.isSunk())
 		{
 			++this.hitCount;
 			this.table[row][column] = "x";
 			ship.shootAt(row, column);
 			return true;
+		} else if (!ship.getShipType().equals("empty") && ship.isSunk())
+		{
+			this.shipsSunk += ship.sunkCnt;
+			ship.setSunkCnt();
+		} else 
+		{
+			ship.setSunkCnt();
+			ship.shootAt(row, column);
 		}
 			
 		//additional shot should be placed at this location
 		return false;
 	}
 	
+	/**
+	 * return shots fired
+	 * @return
+	 */
 	int getShotsFired() {
 		return this.shotsFired;
 	}
 	
+	/**
+	 * return hit count
+	 * @return
+	 */
 	int getHitCount() {
 		return this.hitCount;
 	}
 	
+	/**
+	 * return the number of ship that has sunk
+	 * @return
+	 */
 	int getShipsSunk() {
 		return this.shipsSunk;
 	}
 	
+	/**
+	 * check if the game is over by checking the total number of hit that has been
+	 * dealt to ship objects that are not emptysea
+	 * @return
+	 */
 	boolean isGameOver() {
-		if (this.shipsSunk == 10) return true;
+		if (this.hitCount == Ocean.NUM_BATTLESHIP * 4
+				+ Ocean.NUM_CRUISER * 3
+				+ Ocean.NUM_DESTROYER * 2
+				+ Ocean.NUM_SUBMARINE) return true;
 		return false;
 	}
 	
+	/**
+	 * return ship array
+	 * @return
+	 */
 	Ship[][] getShipArray(){
 		return this.ships;
 	}
 	
+	/**
+	 * set ship array
+	 * @param ships
+	 */
 	void setShipArray(Ship[][] ships) {
 		this.ships = ships;
 	}
@@ -123,10 +181,18 @@ public class Ocean {
 			System.out.print("\n");
 		}
 	}
-	void battleshipRd(Random rd) {
+	
+	/**
+	 * randomly placing a battle ship
+	 * @param rd
+	 */
+	private void battleshipRd(Random rd) {
+		// randomly choosing an orientation
 		boolean horizontal = rd.nextBoolean();
 		Battleship battleship = new Battleship();
 		int m, n;
+		// if the orientation is horizontal, set row between 0 - 9 and column between 3 - 9. 
+		// if vertical, set row between 3 - 9 and column between 0 - 9
 		if (horizontal)
 		{
 			m = rd.nextInt(10);
@@ -139,14 +205,24 @@ public class Ocean {
 		battleship.placeShipAt(m, n, horizontal, this);
 	}
 	
+	/**
+	 * check if the given location is valid for placing a ship
+	 * @param m
+	 * @param n
+	 * @param length
+	 * @param horizontal
+	 * @return
+	 */
 	boolean isAvailable(int m, int n, int length, boolean horizontal) {
+		//return false if any ship is too close 
+//		this.printWithShips();
 		if (horizontal)
 		{
 			for (int i = 0; i < length + 2; ++i)
 			{
 				for (int j = 0; j < 3; ++j)
 				{
-					int row = m + 1 - i, col = n  + 1 - j;
+					int row = m + 1 - j, col = n  + 1 - i;
 					if (row < 0 || row >= 10 || col < 0 || col >= 10) continue;
 					if (!this.ships[row][col].getShipType().equals("empty")) return false;
 				}
@@ -157,7 +233,7 @@ public class Ocean {
 			{
 				for (int j = 0; j < length + 2; ++j)
 				{
-					int row = m + 1 - i, col = n  + 1 - j;
+					int row = m + 1 - j, col = n  + 1 - i;
 					if (row < 0 || row >= 10 || col < 0 || col >= 10) continue;
 					if (!this.ships[row][col].getShipType().equals("empty")) return false;
 				}
@@ -166,10 +242,17 @@ public class Ocean {
 		return true;
 	}
 	
-	void cruiserRd(Random rd) {
+	/**
+	 * randomly placing a cruiser
+	 * @param rd
+	 */
+	private void cruiserRd(Random rd) {
+		// randomly choosing an orientation
 		boolean horizontal = rd.nextBoolean();
 		Cruiser cruiser = new Cruiser();
 		int m, n;
+		// if the orientation is horizontal, set row between 0 - 9 and column between 3 - 9. 
+		// if vertical, set row between 3 - 9 and column between 0 - 9
 		if (horizontal)
 		{
 			m = rd.nextInt(10);
@@ -193,10 +276,17 @@ public class Ocean {
 		cruiser.placeShipAt(m, n, horizontal, this);
 	}
 	
-	void destroyerRd(Random rd) {
+	/**
+	 * randomly placing a destroyer
+	 * @param rd
+	 */
+	private void destroyerRd(Random rd) {
+		// randomly choosing an orientation
 		boolean horizontal = rd.nextBoolean();
 		Destroyer destroyer = new Destroyer();
 		int m, n;
+		// if the orientation is horizontal, set row between 0 - 9 and column between 3 - 9. 
+		// if vertical, set row between 3 - 9 and column between 0 - 9
 		if (horizontal)
 		{
 			m = rd.nextInt(10);
@@ -219,10 +309,17 @@ public class Ocean {
 		destroyer.placeShipAt(m, n, horizontal, this);
 	}
 	
-	void submarineRd(Random rd) {
+	/**
+	 * 
+	 * @param rd
+	 */
+	private void submarineRd(Random rd) {
+		// randomly choosing an orientation
 		boolean horizontal = rd.nextBoolean();
 		Submarine submarine = new Submarine();
 		int m, n;
+		// if the orientation is horizontal, set row between 0 - 9 and column between 3 - 9. 
+		// if vertical, set row between 3 - 9 and column between 0 - 9
 		if (horizontal)
 		{
 			m = rd.nextInt(10);

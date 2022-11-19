@@ -12,11 +12,13 @@ public class BattleshipGame {
 		{
 			prompt(ocean, sc);
 		}
+		ocean.print();
+		System.out.println("All ships have been elimilated, congrats!");
 	}
 	
 	public static void prompt(Ocean ocean, Scanner sc) {
-		ocean.printWithShips();
-//		ocean.print();
+//		ocean.printWithShips();
+		ocean.print();
 		try 
 		{
 			System.out.println("Enter row, column");

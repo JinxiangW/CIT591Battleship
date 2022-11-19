@@ -2,7 +2,7 @@
 
 public class EmptySea extends Ship{
 	private static final String TYPE = "empty";
-	private static final int LENGTH = 0; 
+	private static final int LENGTH = 1; 
 	public EmptySea() {
 		super(1);
 		
